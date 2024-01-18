@@ -7,7 +7,26 @@ on:
     - rv-fixin-actions
 
 jobs:
+  test_rails_application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RAILS_ENV: test
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+      - name: test rails application
+        run: |
+          cd src
+          rails test
   build_and_deploy:
+    needs:
+      - test_rails_application
     runs-on: ubuntu-latest
     timeout-minutes: 20
     outputs:
