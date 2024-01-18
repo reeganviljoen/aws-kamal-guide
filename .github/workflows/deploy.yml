@@ -25,7 +25,7 @@ jobs:
       - name: test rails application
         run: |
           cd src
-          rails test
+          bin/rails test
 
   build_and_deploy:
     needs:
