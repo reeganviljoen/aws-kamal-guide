@@ -12,6 +12,19 @@ jobs:
     timeout-minutes: 20
     env:
       RAILS_ENV: test
+    services:
+      postgres:
+        image: postgres:14.1
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
         with:
@@ -22,10 +35,11 @@ jobs:
         with:
           ruby-version: 3.2.2
           bundler-cache: true
+      - name: setup database
+        run: |
+          cd src
+          bin/rails db:setup
       - name: test rails application
-        env:
-          RAILS_ENV: test
-          BUNDLE_GEMFILE: ./src/Gemfile
         run: |
           cd src
           bin/rails test
