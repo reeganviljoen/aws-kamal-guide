@@ -39,17 +39,17 @@ jobs:
           bundler-cache: true
 
       - name: rails db:create
-        run:
+        run: |
           cd src
           bundle exec rails db:create
 
       - name: rails db:setup
-        run:
+        run: |
           cd src
           bundle exec rails db:setup
 
       - name: rails assets:precompile
-        run:
+        run: |
           cd src
           bundle exec rails assets:precompile
 
