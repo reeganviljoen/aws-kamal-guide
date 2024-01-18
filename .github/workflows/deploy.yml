@@ -24,7 +24,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - uses: ruby/setup-ruby@v1
         env:
-          BUNDLE_GEMFILE: ./kamal/Gemfile
+          BUNDLE_GEMFILE: ./src/kamal/Gemfile
         with:
           ruby-version: 3.2.2
           bundler-cache: true
