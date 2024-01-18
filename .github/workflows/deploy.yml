@@ -18,7 +18,7 @@ jobs:
           ref: ${{ github.event.workflow_run.head_branch }}
       - uses: ruby/setup-ruby@v1
         env:
-          BUNDLE_GEMFILE: ./src/kamal/Gemfile
+          BUNDLE_GEMFILE: ./src/Gemfile
         with:
           ruby-version: 3.2.2
           bundler-cache: true
