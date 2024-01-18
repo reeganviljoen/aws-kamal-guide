@@ -12,6 +12,8 @@ jobs:
     timeout-minutes: 20
     env:
       RAILS_ENV: test
+      PGHOST: localhost
+      PGUSER: postgres
     services:
       postgres:
         image: postgres:14.1
@@ -35,10 +37,22 @@ jobs:
         with:
           ruby-version: 3.2.2
           bundler-cache: true
-      - name: setup database
-        run: |
+
+      - name: rails db:create
+        run:
           cd src
-          bin/rails db:setup
+          bundle exec rails db:create
+
+      - name: rails db:setup
+        run:
+          cd src
+          bundle exec rails db:setup
+
+      - name: rails assets:precompile
+        run:
+          cd src
+          bundle exec rails assets:precompile
+
       - name: test rails application
         run: |
           cd src
