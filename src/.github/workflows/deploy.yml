@@ -24,7 +24,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
       - uses: ruby/setup-ruby@v1
         env:
-          BUNDLE_GEMFILE: ./src/kamal/Gemfile
+          BUNDLE_GEMFILE: ./kamal/Gemfile
         with:
           ruby-version: 3.2.2
           bundler-cache: true
@@ -51,9 +51,9 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           KAMAL_STARTER_DATABASE_PASSWORD: ${{ secrets.KAMAL_STARTER_DATABASE_PASSWORD }}
           DOCKER_BUILDKIT: 1
-          BUNDLE_GEMFILE: ./src/kamal/Gemfile
+          BUNDLE_GEMFILE: ./kamal/Gemfile
         run: |
-          ./src/bin/kamal envify
+          ./bin/kamal envify
 
       - name: Kamal Deploy
         id: kamal-deploy
@@ -62,4 +62,4 @@ jobs:
           WEB_IP_ADDRESS: ${{ secrets.WEB_IP_ADDRESS }}
           BUNDLE_GEMFILE: ./kamal/Gemfile
         run: |
-          ./src/bin/kamal deploy
+          ./bin/kamal deploy
