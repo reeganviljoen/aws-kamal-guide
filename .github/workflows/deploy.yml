@@ -53,7 +53,7 @@ jobs:
           DOCKER_BUILDKIT: 1
           BUNDLE_GEMFILE: ./kamal/Gemfile
         run: |
-          cd bin
+          cd src
           ./bin/kamal envify
 
       - name: Kamal Deploy
@@ -63,5 +63,5 @@ jobs:
           WEB_IP_ADDRESS: ${{ secrets.WEB_IP_ADDRESS }}
           BUNDLE_GEMFILE: ./kamal/Gemfile
         run: |
-          cd bin
+          cd src
           ./bin/kamal deploy
