@@ -12,6 +12,7 @@ jobs:
     timeout-minutes: 20
     env:
       RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432
 
     services:
       postgres:
@@ -38,8 +39,7 @@ jobs:
           bundler-cache: true
 
       - name: rails db:create
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432
+
         run: |
           cd src
           bundle exec rails db:create
