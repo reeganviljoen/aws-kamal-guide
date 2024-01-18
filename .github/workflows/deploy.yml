@@ -1,0 +1,64 @@
+name: Kamal
+
+on:
+  push:
+    branches:
+    - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+    env:
+      RAILS_ENV: production
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - uses: ruby/setup-ruby@v1
+        env:
+          BUNDLE_GEMFILE: ./src/kamal/Gemfile
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          driver-opts: image=moby/buildkit:master
+      - name: Install AWS cli
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          ./aws/install -i /usr/local/aws-cli -b /usr/local/bin --update
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region us-east-1
+      - name: Kamal Envify
+        id  : kamal-envify
+        env :
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          KAMAL_STARTER_DATABASE_PASSWORD: ${{ secrets.KAMAL_STARTER_DATABASE_PASSWORD }}
+          DOCKER_BUILDKIT: 1
+          BUNDLE_GEMFILE: ./src/kamal/Gemfile
+        run: |
+          ./src/bin/kamal envify
+
+      - name: Kamal Deploy
+        id: kamal-deploy
+        env :
+          AWS_ECR_SERVER: ${{ secrets.AWS_ECR_SERVER }}
+          WEB_IP_ADDRESS: ${{ secrets.WEB_IP_ADDRESS }}
+          BUNDLE_GEMFILE: ./kamal/Gemfile
+        run: |
+          ./src/bin/kamal deploy

@@ -1,0 +1,48 @@
+# Name of your application. Used to uniquely configure containers.
+service: kamal
+
+# Name of the container image.
+image: kamal
+
+# Deploy to these servers.
+servers:
+  web:
+    - <%= ENV['WEB_IP_ADDRESS'] %>
+  # Use this for sidekiq servers.
+  # sidekiq:
+  #   cmd: bin/sidekiq
+  #   hosts:
+  #     - "//sidekiq IP//"
+
+
+# Use a different ssh user than root
+ssh:
+  user: www
+
+# Credentials for your image host.
+registry:
+  # Specify the registry server, if you're not using Docker Hub
+  server: <%= ENV['AWS_ECR_SERVER'] %>
+  username: AWS
+
+  # Always use an access token rather than real password when possible.
+  password: <%= %x(aws ecr get-login-password) %>
+
+# Container builder setup.
+builder:
+  args:
+    RUBY_VERSION: 3.2.2
+    RAILS_ENV: production
+  multiarch: false
+
+# Container run setup
+env:
+  clear:
+    RAILS_LOG_TO_STDOUT: 1
+    RAILS_SERVE_STATIC_FILES: 1
+    RAILS_ENV: production
+  secret:
+    - RAILS_MASTER_KEY
+    - DATABASE_URL
+    - KAMAL_STARTER_DATABASE_PASSWORD
+    - AWS_SECRET_ACCESS_KEY
