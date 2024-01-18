@@ -17,6 +17,8 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
       - uses: ruby/setup-ruby@v1
+        env:
+          BUNDLE_GEMFILE: ./src/kamal/Gemfile
         with:
           ruby-version: 3.2.2
           bundler-cache: true
@@ -24,6 +26,7 @@ jobs:
         run: |
           cd src
           rails test
+
   build_and_deploy:
     needs:
       - test_rails_application
